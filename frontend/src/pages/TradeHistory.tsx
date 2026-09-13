@@ -7,7 +7,6 @@ import TopBar from "@/components/layout/TopBar";
 import { apiGet } from "@/lib/api";
 import { fmtInr } from "@/lib/botTypes";
 import type { BotState, DayPnl, TodaySummary, Trade } from "@/lib/botTypes";
-import { fmtPrice } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { formatDate, formatTime, useProfile } from "@/lib/profile";
 
@@ -205,9 +204,6 @@ export default function TradeHistory() {
   }, [selectedDate, filteredTrades, historyCards.length, summary?.target_inr, summary?.max_trades]);
 
   const pnl = selectedDaySummary.pnl_inr;
-  const achieved = selectedDaySummary.target_achieved;
-  const selectedTrade = filteredTrades.find((trade) => trade.id === selectedTradeId) ?? null;
-  const selectedTradeIsRunning = selectedTrade?.status === "open" || selectedTrade?.status === "pending";
 
   const cardStats = useMemo(() => {
     let w = 0;
