@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.venv
+frontend/node_modules
+frontend/dist
+mongo_backup
+__pycache__
+*.pyc

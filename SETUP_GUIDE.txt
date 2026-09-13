@@ -1,0 +1,195 @@
+Python packages ko direct system/user space me `--break-system-packages` flag ke saath install karenge jisse project source directory me `.venv` ya koi install files create nahi hongi.
+
+**1. System Dependencies & MongoDB Setup**
+
+```bash
+# System packages aur Yarn install karein
+sudo apt update && sudo apt install -y git curl python3 python3-pip nodejs npm docker.io
+sudo systemctl enable --now docker || true
+sudo npm install -g yarn
+
+# MongoDB container initiate karein
+sudo docker pull mongo:7
+sudo docker volume create scalping-mongo-data || true
+sudo docker run -d --name scalping-mongo --restart unless-stopped -p 27017:27017 -v scalping-mongo-data:/data/db mongo:7 || sudo docker start scalping-mongo
+
+
+SCALPING APP - SETUP AND RUN GUIDE
+===================================
+
+This guide is for Ubuntu/Linux and assumes the project is already at:
+  /workspaces/codespaces-blank/Scalping-main
+
+Use three terminals when running the app:
+  Terminal 1: MongoDB and backend
+  Terminal 2: frontend
+  Terminal 3: checks
+
+Keep the live-trading toggle off until paper trading is tested. Never commit backend/.env.
+
+1. INSTALL SYSTEM PACKAGES
+---------------------------
+
+  sudo apt update
+  sudo apt install -y curl python3 python3-venv python3-pip nodejs npm docker.io
+  sudo systemctl enable --now docker || true
+  sudo npm install -g yarn
+
+Check the tools:
+
+  python3 --version
+  node --version
+  yarn --version
+  docker --version
+
+2. START MONGODB
+----------------
+
+Run these commands from any terminal. The volume keeps data after container restarts:
+
+  sudo docker pull mongo:7
+  sudo docker volume create scalping-mongo-data
+  sudo docker start scalping-mongo 2>/dev/null || sudo docker run -d \
+    --name scalping-mongo --restart unless-stopped \
+    --network host \
+    -v scalping-mongo-data:/data/db \
+    mongo:7
+
+Verify MongoDB:
+
+  sudo docker ps --filter name=scalping-mongo
+  curl -fsS http://127.0.0.1:27017/ || true
+
+The curl command may print an HTTP response saying MongoDB does not speak HTTP;
+that still confirms that the port is reachable. The docker ps status must be Up.
+
+3. CONFIGURE AND INSTALL BACKEND
+--------------------------------
+
+Terminal 1:
+
+  cd /workspaces/codespaces-blank/scalping-bot/backend
+  python3 -m pip install --upgrade pip
+  python3 -m pip install -r requirements.txt
+
+Create backend/.env (keep the API keys empty for paper mode):
+
+  printf '%s\n' \
+    'MONGODB_URI="mongodb://127.0.0.1:27017"' \
+    'DB_NAME="scalping"' \
+    'CORS_ORIGINS="http://localhost:3000"' \
+    'APP_URL="http://localhost:3000"' \
+    'COINDCX_BASE_URL="https://api.coindcx.com"' \
+    '# keep live toggle off until validation is complete' > .env
+
+For the two separate admin logins, add these settings to backend/.env:
+
+  ADMIN_EMAIL="admin"
+  ADMIN_PASSWORD="kunal"
+  SECOND_ADMIN_EMAIL="sayandip"
+  SECOND_ADMIN_PASSWORD="sayandip"
+  SESSION_SECRET="replace-with-a-long-random-secret"
+  SESSION_HTTPS_ONLY="false"
+
+Kunal and Sayandip have separate strategies, credentials, bot state, trades,
+logs, and WebSocket data. Change both passwords and use a random SESSION_SECRET
+before deploying with HTTPS.
+
+Verify the backend imports:
+
+  python -c "import server; print('Backend import: OK')"
+
+4. INSTALL FRONTEND
+-------------------
+
+Terminal 2:
+
+  cd /workspaces/codespaces-blank/scalping-bot/frontend
+  yarn install
+  yarn typecheck
+
+5. RUN THE APP
+--------------
+
+Terminal 1:
+
+  cd /workspaces/codespaces-blank/scalping-bot/backend
+    python3 -m uvicorn server:app --host 0.0.0.0 --port 8001
+
+Terminal 2:
+
+  cd /workspaces/codespaces-blank/scalping-bot/frontend
+  npm install
+  npm run dev -- --host 0.0.0.0 --port 3000
+Open the frontend at:
+  http://localhost:3000
+
+6. VERIFY THE BACKEND
+---------------------
+
+Terminal 3:
+
+  curl -i http://127.0.0.1:8001/api/market/snapshot
+  curl -i http://127.0.0.1:8001/api/bot/state
+  curl -i http://127.0.0.1:8001/api/bot/logs
+
+All three endpoints should return HTTP 200. If MongoDB is temporarily unavailable,
+/api/bot/logs now returns the engine's in-memory logs instead of HTTP 500.
+
+7. COINDCX KEYS
+---------------
+
+Paper/read-only mode: keep credentials empty until they are added through the API Keys UI.
+The UI encrypts and stores each user's credentials in MongoDB.
+
+Live trading requires both keys and an intentional change to the live toggle set to true.
+
+8. COMMON FIXES
+---------------
+
+MongoDB connection refused:
+  sudo docker start scalping-mongo
+  sudo docker ps --filter name=scalping-mongo
+
+Container already exists but is stopped:
+  sudo docker start scalping-mongo
+
+Port 27017, 8001, or 3000 already in use:
+  sudo lsof -i :27017
+  sudo lsof -i :8001
+  sudo lsof -i :3000
+
+Missing Python package:
+  cd /workspaces/codespaces-blank/scalping-bot/backend
+  python3 -m pip install --break-system-packages -r requirements.txt
+
+Stop services with Ctrl+C in the backend/frontend terminals. Stop MongoDB with:
+  sudo docker stop scalping-mongo
+
+Start it again later with:
+  sudo docker start scalping-mongo
+  sudo docker stop scalping-mongo
+
+Start it again later:
+
+  sudo docker start scalping-mongo
+
+
+
+cd /workspaces/codespaces-blank/scalping-bot
+git init
+git checkout -b main
+git add .
+git commit -m "Initial commit on new pc"
+git remote add origin https://github.com/kunnnalbusiness/Tinnu_Services.git
+git push -u origin main
+
+cd /workspaces/codespaces-blank/scalping-bot
+git init
+git checkout -b main
+git add .
+git commit -m "Initial commit for Tinnu_Services"
+git remote set-url origin https://github.com/kunnnalbusiness/Tinnu_Services.git
+git push -u origin main
+
+Revoke any exposed GitHub token immediately and authenticate through GitHub CLI or an approved credential helper. Never store tokens in this guide or in a Git remote URL.

@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: scalping-bot
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+
+      - key: DB_NAME
+        value: scalping_bot
+
+      - key: CORS_ORIGINS
+        sync: false
+
+      - key: SESSION_SECRET
+        sync: false
+
+      - key: CREDENTIAL_ENCRYPTION_KEY
+        sync: false
+
+      - key: APP_URL
+        sync: false
+
+      - key: COINDCX_BASE_URL
+        value: https://api.coindcx.com
+
+      - key: COINDCX_WS_URL
+        value: https://stream.coindcx.com
+
+      - key: COINDCX_WS_PRICE_CHANNEL
+        value: currentPrices@futures@rt
+
+      - key: ADMIN_EMAIL
+        value: admin
+
+      - key: ADMIN_PASSWORD
+        sync: false
+
+      - key: SECOND_ADMIN_EMAIL
+        value: VIP_ADMIN
+
+      - key: SECOND_ADMIN_PASSWORD
+        sync: false

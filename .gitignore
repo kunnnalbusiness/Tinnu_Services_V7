@@ -1,0 +1,24 @@
+# Local secrets and runtime files
+.env
+backend/.env
+frontend/.env
+
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Node/Vite
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Backups and local logs
+mongo_backup/
+*.log
+
+# OS/editor files
+.DS_Store
+.vscode/
