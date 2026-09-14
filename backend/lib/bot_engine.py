@@ -4357,7 +4357,7 @@ class BotEngine:
         rt: Runtime,
     ) -> None:
         rt.phase = "waiting"
-
+        rt.slot = None
         rt.pair = rt.side = rt.trade_id = rt.order_id = rt.position_id = None
         rt.entry = rt.tp = rt.sl = None
         rt.original_sl = None
