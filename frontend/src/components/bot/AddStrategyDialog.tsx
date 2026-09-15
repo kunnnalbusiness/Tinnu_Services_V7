@@ -22,6 +22,15 @@ import { cn } from "@/lib/utils";
 const PICK_LABEL: Record<CoinPick, string> = {
   top_loser: "Top loser (biggest 24h fall)",
   top_gainer: "Top gainer (biggest 24h rise)",
+  top4_gainer_buy: "Top 4 gainer - Buy",
+  top4_gainer_sell: "Top 4 gainer - Sell",
+  top4_loser_buy: "Top 4 loser - Buy",
+  top4_loser_sell: "Top 4 loser - Sell",
+};
+
+const PICK_LABEL_TOP1: Record<string, string> = {
+  top_loser: "Top 1 loser (biggest 24h fall)",
+  top_gainer: "Top 1 gainer (biggest 24h rise)",
   top4_gainer_buy: "Top 1 gainer - Buy",
   top4_gainer_sell: "Top 1 gainer - Sell",
   top4_loser_buy: "Top 1 loser - Buy",
@@ -457,15 +466,15 @@ export default function AddStrategyDialog({
                 </div>
                 <Select value={coinPick} onValueChange={(value: string) => setCoinPick(value as CoinPick)}>
                   <SelectTrigger data-testid="coin-pick-select" className="border-border bg-background text-foreground text-sm font-medium">
-                    <SelectValue>{(v) => PICK_LABEL[v as CoinPick]}</SelectValue>
+                    <SelectValue>{(v) => isStrategy6 ? (PICK_LABEL_TOP1[v as string] ?? PICK_LABEL[v as CoinPick]) : PICK_LABEL[v as CoinPick]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {isStrategy2 || isStrategy4 || isStrategy6 ? (
                       <>
-                        <SelectItem value="top4_gainer_buy">{PICK_LABEL.top4_gainer_buy}</SelectItem>
-                        <SelectItem value="top4_gainer_sell">{PICK_LABEL.top4_gainer_sell}</SelectItem>
-                        <SelectItem value="top4_loser_buy">{PICK_LABEL.top4_loser_buy}</SelectItem>
-                        <SelectItem value="top4_loser_sell">{PICK_LABEL.top4_loser_sell}</SelectItem>
+                        <SelectItem value="top4_gainer_buy">{isStrategy6 ? "Top 1 gainer - Buy" : "Top 4 gainer - Buy"}</SelectItem>
+                        <SelectItem value="top4_gainer_sell">{isStrategy6 ? "Top 1 gainer - Sell" : "Top 4 gainer - Sell"}</SelectItem>
+                        <SelectItem value="top4_loser_buy">{isStrategy6 ? "Top 1 loser - Buy" : "Top 4 loser - Buy"}</SelectItem>
+                        <SelectItem value="top4_loser_sell">{isStrategy6 ? "Top 1 loser - Sell" : "Top 4 loser - Sell"}</SelectItem>
                       </>
                     ) : (
                       <>
