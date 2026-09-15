@@ -297,6 +297,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=SESSION_SECRET,
     same_site="lax",
+    max_age=30 * 24 * 3600,
     https_only=os.environ.get(
         "SESSION_HTTPS_ONLY",
         "false",
