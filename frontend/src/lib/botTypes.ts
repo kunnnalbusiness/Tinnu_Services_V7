@@ -123,7 +123,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     rule_set: "Strategy6",
     name: "6. FUNDING LOSS",
-    coin_pick: "top_loser",
+    coin_pick: "top4_loser_buy",
     timeframe: "4h",
     order_type: "market",
     capital_cap_inr: null,
